@@ -34,8 +34,21 @@
 
 *  一些較危險的函式：`scanf`、`gets`、`sprintf`、`strcpy`、`strcat`使用時必須要多加注意。
 *  `scanf()`：
-  * 
-
+  * 如果輸入: "  123dd"會忽略前面的空白，而且只會顯示123的部分，dd會留在緩衝，等到下一次 call scanf的時候會自動讀取 buffer，造成程式錯誤
+  * ```c
+    int main(int argc, char** argv)
+    {
+        int text, test;
+        printf("請輸入一個咚咚");
+        scanf_s("%d", &text);  // 輸入 空白123 dd
+        printf("請輸入一個咚咚 %d", text);  // 只會出現 123
+        
+        scanf_s("%d", &test);      // 會直接接受 buffer剩下的英文字母
+        printf("你輸入的東東 %d", test);  // 然後直接print 出來
+        system("pause");
+        return 0;
+    }
+    ```
 
 
 
