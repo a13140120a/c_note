@@ -336,6 +336,13 @@ goto 標籤名稱;
 
 * 有緩衝區:
   * 定義與宣告:`FILE *指標變數;`，開啟: `fopen("欲開啟檔案", "存取模式")`，存取模式= r、w、a。
+  * `FILE *fopen(const char *filename, const char *mode);`，失敗回傳NULL。
+  * `int fclose(FILE *fptr);`，成功回傳0，失敗回傳EOF(就是-1)。
+  * `int getc(FILE *fptr);`，成功回傳字元(轉成int)，失敗回傳EOF(就是-1)。
+  * `int putc(int char, FILE *fptr);`，成功返回unsigned char轉換為int，失敗回傳 EOF。
+  * `char *fgets(char *str , int n, FILE *fptr)`，str 為儲存的buffer， n為讀取長度(byte)，失敗或獨到檔尾回傳 NULL
+  * `int fputs(const char *str, FILE *fptr)`，將字串 str 寫入檔案。
+  * `int feof(FILE *fptr);`，若尚未到達檔尾，則回傳0，若以到達檔尾，則回傳非0值。
   * 字元讀取:
   * ```C
       int main(void)
@@ -386,8 +393,9 @@ goto 標籤名稱;
          system("pause");
          return 0;
       }
-  * ```
+    ```
   * 區塊讀取:
+  * `size_t fread(void *ptr, size_t size, size_t cnt, FILE *fptr)`，由檔案讀取cnt個資料項，每個資料項size個byte，回傳值為資料讀取個數
   * ```c
       int main(void)
       {
@@ -410,6 +418,7 @@ goto 標籤名稱;
       }
     ```
   * 區塊寫入:
+  * `size_t fwrite(const void *ptr, size_t size, size_t cnt, FILE *fptr)`，從指標ptr位址，將cnt個資料項，每個資料項size個byte寫入檔案，回傳值為資料寫入個數
   * ```c
      int main(void)
      {
@@ -430,8 +439,8 @@ goto 標籤名稱;
         system("pause");
         return 0;
      }
-  * ```
-* 有緩衝區:
+    ```
+* 無緩衝區:
   * `open("檔案名稱", 開啟模式, 存取模式);`，成功回傳句柄(handle)，失敗回傳-1
   * 開啟檔案:
     * 基本模式:
@@ -441,11 +450,15 @@ goto 標籤名稱;
     * 修飾模式:
     * [連結1](https://www.796t.com/content/1544966497.html)
     * [連結2](https://blog.jaycetyle.com/2018/12/linux-fd-open-close)
+    * 存取模式:
+    * S_WRITE：新建的檔案可供寫入
+    * S_IREAD：新建的檔案可供讀取
+    * S_IREAD|S_WRITE：新建的檔案可讀寫
   * `open(const char *filename, int O_flag[int pmode]);`
   * `int close(int handle);`
   * `int create(const char *filename, int pmode);`
-  * `int read(int handle, char *buffer, unsigned count);`
-  * `int write(int handle, char *buffer, unsigned count);`
+  * `int read(int handle, char *buffer, unsigned count);`，一次讀取count 個 bytes，回傳實際讀取的 byte
+  * `int write(int handle, char *buffer, unsigned count);`，一次寫入count 個 bytes，回傳實際寫入的 byte
   * ```c
       #include <stdio.h>
       #include <stdlib.h>
@@ -479,7 +492,131 @@ goto 標籤名稱;
          return 0;
       }
     ```
+* 二進位檔:
+  * 有緩衝
+    * `FILE *fptr;`以及`fptr = fopen("abc.bin", "ab")`，存取模式有 rb、wb、ab。
+    * 讀:
+    * ```c
+        int main(void)
+        {
+           double a,b;
+           int i,arr[3];
+           FILE *fptr;
 
+           fptr=fopen("number.bin","rb");	 /* 開啟檔案 */
+           fread(&a,sizeof(double),1,fptr);  /* 把讀取的資料設定給a存放 */
+           fread(&b,sizeof(double),1,fptr);  /* 把讀取的資料設定給b存放 */ 
+           fread(arr,sizeof(int),3,fptr); /* 把讀取的資料設定給陣列arr存放 */
+
+           printf("a=%4.2f\n",a);
+           printf("b=%4.2f\n",b);
+           for(i=0;i<3;i++)
+              printf("arr[%d]=%d\n",i,arr[i]);
+
+           fclose(fptr);		/* 關閉檔案 */
+
+           system("pause");
+           return 0;
+        }
+      ```
+    * 寫:
+    * ```c
+        int main(void)
+        {
+           double a=3.14,b=6.28;
+           int arr[]={12,43,64};
+           FILE *fptr;
+
+           fptr=fopen("number.bin","wb"); 	/* 開啟檔案 */
+           fwrite(&a,sizeof(double),1,fptr);	/* 寫入變數a的值 */
+           fwrite(&b,sizeof(double),1,fptr); 	/* 寫入變數b的值 */  
+           fwrite(arr,sizeof(int),3,fptr); 	/* 寫入陣列arr的所有元素 */ 
+
+           fclose(fptr);		/* 關閉檔案 */
+           printf("檔案寫入完成!!\n");
+
+           system("pause");
+           return 0;
+        }
+      ```
+  * 無緩衝:
+    * 寫:
+    * ```c
+       int main(void)
+       {  
+          int f1;
+          struct data	  			/* 定義結構data */
+          {
+             char name[10];
+             int math;
+          }student={"Jenny",96};		/* 宣告結構變數data，並設定初值 */	   
+
+          f1=open("score.bin",O_CREAT|O_WRONLY|O_BINARY,S_IREAD);  // 因為設為唯讀，所以再執行一次會失敗!!(無法寫入)
+          if((f1!=-1))		/* 檔案開啟成功 */
+          {
+             write(f1,&student,sizeof(student));
+             close(f1);
+             printf("資料已寫入檔案!!\n");
+          }
+          else	
+             printf("檔案開啟失敗!!\n");
+
+          system("pause");
+          return 0;
+       }
+      ```
+  * 有緩衝:
+    * 讀:
+    * ```c
+        int main(void)
+        { 
+           int f1;
+           struct data	
+           {
+              char name[10];
+              int math;
+           }student;   		/* 宣告結構變數student */
+           f1=open("score.bin",O_RDONLY | O_BINARY);
+
+           if((f1!=-1))		/* 檔案開啟成功 */
+           {
+              read(f1,&student,sizeof(student)); /* 讀取資料並給student存放 */
+              printf("student.name=%s\n",student.name); 
+              printf("student.math=%d\n",student.math); 
+              close(f1);
+           }
+           else	/* 檔案開啟失敗 */
+              printf("檔案開啟失敗!!\n");
+
+           system("pause");
+           return 0;
+        }
+      ```
+    * 寫:
+    * ```c
+        int main(void)
+        {  
+           int f1;
+           struct data	  			/* 定義結構data */
+           {
+              char name[10];
+              int math;
+           }student={"Jenny",96};		/* 宣告結構變數data，並設定初值 */	   
+
+           f1=open("score.bin",O_CREAT|O_WRONLY|O_BINARY,S_IREAD);
+           if((f1!=-1))		/* 檔案開啟成功 */
+           {
+              write(f1,&student,sizeof(student));
+              close(f1);
+              printf("資料已寫入檔案!!\n");
+           }
+           else	
+              printf("檔案開啟失敗!!\n");
+
+           system("pause");
+           return 0;
+        }
+      ```
 
 ## 建構子
     1. 呼叫類別時，同時也會呼叫建構子，
