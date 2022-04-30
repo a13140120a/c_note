@@ -12,8 +12,8 @@
 * ## [enum & union](#008) #
 * ## [typedef](#009) #
 * ## [檔案處理](#0010) #
-
-
+* ## [extern & #ifdef](#0011) #
+* ## [malloc & linked list](#0012) #
 
 
 
@@ -702,7 +702,7 @@ goto 標籤名稱;
         }
     }
   ```
-<h1 id="0013">malloc</h1> 
+<h1 id="0013">malloc & linked list</h1> 
 
 * 定義與宣告:
   * ```c
