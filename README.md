@@ -11,6 +11,9 @@
 * ## [結構](#007) #
 * ## [enum & union](#008) #
 * ## [typedef](#009) #
+* ## [檔案處理](#0010) #
+
+
 
 
 
@@ -332,7 +335,7 @@ goto 標籤名稱;
   * ```
 * [使用 typdef 來定義函數指標以增加程式的可讀性](https://medium.com/@racktar7743/c%E8%AA%9E%E8%A8%80-function-pointer%E7%9A%84%E6%87%89%E7%94%A8-%E4%B8%89-%E4%BD%BF%E7%94%A8-typdef-%E4%BE%86%E5%AE%9A%E7%BE%A9%E5%87%BD%E6%95%B8%E6%8C%87%E6%A8%99%E4%BB%A5%E5%A2%9E%E5%8A%A0%E7%A8%8B%E5%BC%8F%E7%9A%84%E5%8F%AF%E8%AE%80%E6%80%A7-7a26857e3e00)
 
-<h1 id="009">檔案處理</h1> 
+<h1 id="0010">檔案處理</h1> 
 
 * 有緩衝區:
   * 定義與宣告:`FILE *指標變數;`，開啟: `fopen("欲開啟檔案", "存取模式")`，存取模式= r、w、a。
@@ -617,6 +620,188 @@ goto 標籤名稱;
            return 0;
         }
       ```
+      
+<h1 id="0011">extern & #ifdef</h1> 
+
+* 以下兩個檔案:
+  * ```c
+      /* count.c */
+      #include <stdio.h>
+      void count(void)
+      {
+         extern int cnt;     /* 利用extern關鍵字指明cnt是全域變數 */
+         cnt++;
+         printf("cnt=%d\n",cnt);
+      }
+  * ```
+  * ```c
+      /* main.c */
+      #include <stdio.h>
+      #include <stdlib.h>
+      
+      int cnt = 0;			/* 宣告全域變數cnt */
+      void count(void);	/* 宣告count()函數的原型 */
+      int main(void)
+      {
+       count();		/* 第一次呼叫函數count() */
+       count();		/* 第二次呼叫函數count() */
+
+       cnt++;					/* 將cnt的值加1 */
+       printf("cnt=%d\n", cnt);		/* 印出cnt的值 */
+
+       system("pause");
+       return 0;
+      }
+  * ```
+* `#ifdef`:
+  * ```c
+      #ifdef 識別項
+          /* 編譯此部分程式碼 */
+      #else
+          /* 否則編譯此部分程式碼 */
+      #end if
+    ```
+  * ```c
+      #ifndef test  // ifndef 代表如果沒有被定義過
+          #define test
+      #else
+          #define test2
+      #endif
+    ```
+* `#if`:
+  * ```c
+      #if 條件運算
+          /* 編譯此部分程式碼 */
+      #elif 條件運算
+          /* 否則編譯此部分程式碼 */
+      #else
+
+      #end if
+    ```
+  * ```c
+      #include <stdio.h>  
+      #define NUMBER 100
+
+      void main() {
+
+      #if (NUMBER==10)
+          printf("Value of Number is: 10");
+      #else
+          printf("Value of Number is: %d", NUMBER);
+      #endif
+      }
+    ```
+
+<h1 id="0012">main 函數</h1> 
+
+* ```c
+    main(int argc, char *argv[]){
+        printf("參數的數量:%d", argc); // 加上檔案名稱本身
+        for (int i=0;i<argc;i++){
+            printf("argv[%d]=%s\n",i,argv[i]);
+        }
+    }
+  ```
+<h1 id="0013">malloc</h1> 
+
+* 定義與宣告:
+  * ```c
+      int *ptr;  // 宣告指向整數的 ptr
+      ptr = (int*)malloc(sizeof(int))  // 配置 sizeof(int)的記憶體空間，並把 ptr 指向他
+      free(ptr); // 釋放記憶體空間
+    ```
+  * 範例:
+  * ```c
+      int main(void)
+      {
+         int *ptr,i;
+         ptr=(int *) malloc(3*sizeof(int));   /* 配置3個存放整數的空間 */
+
+         *ptr=12;			/* 把配置之記憶空間的第1個位置設值為12 */
+         *(ptr+1)=35;		/* 把第2個位置設值為35 */
+         *(ptr+2)=140;		/* 把第3個位置設值為140 */
+
+         for(i=0;i<3;i++)
+            printf("*ptr+%d=%d\n",i,*(ptr+i));   /* 印出存放的值 */
+
+         free(ptr);           /* 釋放由ptr所指向的記憶空間 */
+
+         system("pause");
+         return 0;
+      }
+    ```
+* linked list:
+```c
+struct node
+{
+   int data;				  /* 資料成員  */
+   struct node *next;		  /* 鏈結成員，存放指向下一個節點的指標  */
+};
+typedef struct node NODE;	  /* 將struct node定義成NODE型態 */
+
+int main(void)
+{
+   NODE a,b,c;		/* 宣告a,b,c為NODE型態的變數 */
+   NODE *ptr=&a;		/* 宣告ptr,並將它指向節點a */
+   
+   a.data=12;			/* 設定節點a的data成員為12 */
+   a.next=&b;			/* 將節點a的next成員指向下一個節點，即b */
+   b.data=30;			
+   b.next=&c;			
+   c.data=64;			
+   c.next=NULL;		/* 將節點c的next成員設成NULL */
+   
+   while (ptr!=NULL)	/* 當ptr不是NULL時，則執行下列敘述 */
+   {
+      printf("address=%p, ",ptr);		/* 印出節點的位址 */
+      printf("data=%d, ",ptr->data);	/* 印出節點的data成員 */
+      printf("next=%p\n",ptr->next);	/* 印出下一個節點的位址 */
+      ptr=ptr->next;					/* 將ptr指向下一個節點 */
+   }
+   
+   system("pause");
+   return 0;
+}
+```
+* linked list with malloc:
+```c
+struct node
+{
+   int data;				  /* 資料成員  */
+   struct node *next;		  /* 鏈結成員，存放指向下一個節點的指標  */
+};
+typedef struct node NODE;	  /* 將struct node定義成NODE型態 */
+
+int main(void)
+{
+   int i,val,num;
+   NODE *first,*current,*previous;    /* 建立3個指向NODE的指標 */
+   printf("Number of nodes: ");
+   scanf("%d",&num);			/* 輸入節點的個數 */
+   for(i=0;i<num;i++)    
+   {
+      current=(NODE *) malloc(sizeof(NODE));  /* 建立新的節點 */
+      printf("Data for node %d: ",i+1);
+      scanf("%d",&(current->data));		/* 輸入節點的data成員 */
+      if(i==0)					/* 如果是第一個節點 */
+         first=current;			/* 把指標first指向目前的節點 */
+      else
+         previous->next=current;	/* 把前一個節點的next指向目前的節點 */
+      current->next=NULL;		/* 把目前的節點的next指向NULL */
+      previous=current;   		/* 把前一個節點設成目前的節點 */
+   }
+   current=first;			/* 設定current為第一個節點 */
+   while (current!=NULL)	/* 如果還沒有到串列末端，則進行走訪的動作 */
+   {
+      printf("address=%p, ",current);	 /* 印出節點的位址 */
+      printf("data=%d, ",current->data); /* 印出節點的data成員 */
+      printf("next=%p\n",current->next);	 /* 印出節點的next成員 */
+      current=current->next;	    /* 設定current指向下一個節點 */
+   }
+   system("pause");
+   return 0;
+}
+```
 
 ## 建構子
     1. 呼叫類別時，同時也會呼叫建構子，
