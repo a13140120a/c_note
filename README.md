@@ -108,9 +108,11 @@ goto 標籤名稱;
 <h1 id="004">函數</h1> 
 
 * 函數的定義放在 `main()` 之前的話，就不須宣告，如果定義要放在`main()`之後的話，就必須要先宣告
-* 靜態變數:
+* #### 靜態內部變數:
+  * 只能在同一個程式碼檔案內使用，無法跨檔案
   * 活動區域和區域變數相同，但是編譯時就已經配置好固定記憶體位置，且函數結束時值會被保留下來:
   * `static int a;`
+  * [靜態內部變數](https://github.com/a13140120a/c_plus_plus/new/main?readme=1#static-%E5%A4%96%E9%83%A8%E8%AE%8A%E6%95%B8)
 * 函數的引數分成傳值跟傳址
 * 巨集
   * `#define BEGIN {`定義BEGIN 為左括號，`#define END }`定義BEGIN 為右括號
@@ -623,7 +625,7 @@ goto 標籤名稱;
       
 <h1 id="0011">extern & #ifdef</h1> 
 
-* 以下兩個檔案:
+* #### 以下兩個檔案:
   * ```c
       /* count.c */
       #include <stdio.h>
