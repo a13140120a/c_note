@@ -2,12 +2,16 @@
 
 *Bug的由來: 1947年 MARK2 大型電腦的實驗室研究人員有一天發現電腦當機了，檢查了好多次終於發現一隻飛蛾卡在繼電器上，導致電路短路，造成電腦無法正常運作，從此以後「Bug」變成了另外一種名詞。*
 
+*編譯器請使用gcc*
+
+
+
 * ## [基本資料型態和條件運算](#001) #
 * ## [input and output](#002) #
 * ## [goto 語法](#003) #
 * ## [函數](#004) #
 * ## [字串](#005) #
-* ## [指標](#006) #
+* ## [pointer & reference](#006) #
 * ## [結構](#007) #
 * ## [enum & union](#008) #
 * ## [typedef](#009) #
@@ -101,7 +105,6 @@ goto 標籤名稱;
           }
           printf("=%d\n", sum);
       system("pause");
-      return 0;
   }
   ```
 
@@ -112,7 +115,7 @@ goto 標籤名稱;
   * 只能在同一個程式碼檔案內使用，無法跨檔案
   * 活動區域和區域變數相同，但是編譯時就已經配置好固定記憶體位置，且函數結束時值會被保留下來:
   * `static int a;`
-  * [靜態內部變數](https://github.com/a13140120a/c_plus_plus/new/main?readme=1#static-%E5%A4%96%E9%83%A8%E8%AE%8A%E6%95%B8)
+  * [靜態外部變數](https://github.com/a13140120a/c_plus_plus/new/main?readme=1#static-%E5%A4%96%E9%83%A8%E8%AE%8A%E6%95%B8)
 * 函數的引數分成傳值跟傳址
 * 巨集
   * `#define BEGIN {`定義BEGIN 為左括號，`#define END }`定義BEGIN 為右括號
@@ -125,6 +128,8 @@ goto 標籤名稱;
   * 有引數的巨集:
   * 可定義`#define SQUARE(X) X*X`，但如果出現 `SQUARE(n+1)` 就會變成 n+1\*n+1 ，很明顯是錯誤的，因此改進方法是`#define SQUARE(X) (X)*(X)`
 * 陣列引數: 當引數維陣列(Array)的時候，可以不必填入第一個括號的個數，如`void func(int a[][2][3]);`。
+* [含數指標]()
+
 
 <h1 id="005">字串</h1> 
 
@@ -137,10 +142,20 @@ goto 標籤名稱;
 
 * [getch()、puts()](https://github.com/a13140120a/c_note/edit/main/README.md#puts-%E8%B7%9F-gets%E6%9C%83%E8%BC%B8%E5%87%BA%E8%B7%9F%E6%8E%A5%E5%8F%97%E5%AD%97%E4%B8%B2gets-%E8%BC%B8%E5%87%BA%E5%AE%8C%E4%B9%8B%E5%BE%8C%E6%9C%83%E8%87%AA%E5%8B%95%E6%8F%9B%E8%A1%8C)
 
+* [字串指標](https://github.com/a13140120a/c_note/edit/main/README.md#%E6%8C%87%E6%A8%99%E5%AD%97%E4%B8%B2)
 
 
 
-<h1 id="006">指標</h1> 
+<h1 id="006">pointer & reference</h1> 
+
+* reference:
+  * ```c
+      int a=10;
+      int &ref=a;
+      printf("%d",a);    // 10
+      printf("%d",ref);  // 10
+    ```
+
 
 ```c
   int value;
@@ -179,7 +194,7 @@ goto 標籤名稱;
       ```
 * #### [結構指標](https://github.com/a13140120a/c_note/edit/main/README.md#%E7%B5%90%E6%A7%8B%E6%8C%87%E6%A8%99-1)
       
-* 指標字串:
+* #### 指標字串:
   * ```c
       const char *ptr = "hello world"; // 宣告一個 ptr 並指向字串的第一個字元
       ptr = ptr + 1; // 將指標指向第2個字元
@@ -197,6 +212,81 @@ goto 標籤名稱;
     printf("ptr2[1]=%p\n", ptr2[1]);  // 10個 byte
     printf("ptr2[2]=%p\n", ptr2[2]);  // 10個 byte
     ```
+
+* 函數指標：
+  * 定義與宣告：
+    * `傳回值型態 (*指標變數名稱)(引數1, 引數2, .....);`
+    * ```c
+        int square(int);  // 定義 square()
+        int (*pf)(int);   // 定義函數指標 pf
+        pf = square;  // 將指標 pf 指向 square
+      ```
+  * 範例:
+    * ```c
+        #include <iostream>
+        #include <cstdlib>
+        using namespace std;
+        int square(int);            // 定義square()函數的原型
+        int main(void)
+        {
+           int (*pf)(int);          // 定義函數指標pf
+           pf=square;               // 使函數指標pf指向square()
+           cout << "square(5)=" << (*pf)(5) << endl;        // 印出square(5)的值
+           system("pause");
+           return 0;
+        }
+
+        int square(int a)           // 自訂函數square(), 計算平方值 
+        {
+           return (a*a);
+        }
+      ```
+  * 函數指標的引數:
+    * `void func(double, double, double (*pf)(double, double))`
+    * ```c
+        void func(double x, double y, double (*pf)(double, double)){
+            cout << (*pf)(x,y) << endl;  // call 函數
+        }
+        
+      ```
+    * ```c
+        #include <iostream>
+        #include <cstdlib>
+        using namespace std;
+        double triangle(double,double),rectangle(double,double);
+        void showarea(double,double,double (*pf)(double,double));
+        int main(void)
+        {
+           cout << "triangle(6,3.2)=";
+           showarea(6,3.2,triangle);                   // 呼叫triangle(),並印出其值
+           cout << "rectangle(4,6.1)=";
+           showarea(4,6.1,rectangle);                  // 呼叫rectangle(),並印出其值
+
+           system("pause");
+           return 0;
+        }
+
+        double triangle(double base,double height)     // 計算三角形面積
+        {
+           return (base*height/2);
+        }
+
+        double rectangle(double height,double width)   // 計算長方形面積
+        {
+           return (height*width);
+        }
+
+        void showarea(double x,double y,double (*pf)(double,double))
+        {
+           cout << (*pf)(x,y) << endl;
+           return;
+        }
+      ```
+
+
+
+
+
 
 
 <h1 id="007">結構</h1> 
@@ -243,26 +333,30 @@ goto 標籤名稱;
 
 * enum:
   * 宣告與定義:
-  * ```c
-    enum color{
-        red,  // 宣告的同時會把red、green、blue 定義為常數 0、1、2
-        green,
-        blue=5 // 也可以在宣告的同時指定 blue 為 5
-    }shirt;
-    /* 或者 */
-    enum color{
-        red,
-        green,
-        blue
-    }shirt=red;  // 定義初始值
-    /* 或者 */
-    enum color shirt=blue;
-    printf("%d", sizeof(shirt)) // 4個 bytes
-    shirt=red; // 更改 shirt 為 red
-    red=3; // 違法操作，常數不能更改
-    ```
+    * ```c
+      enum color{
+          red,  // 宣告的同時會把red、green、blue 定義為常數 0、1、2
+          green,
+          blue=5 // 也可以在宣告的同時指定 blue 為 5
+      }shirt;
+      /* 或者 */
+      enum color{
+          red,
+          green,
+          blue
+      }shirt=red;  // 定義初始值
+      /* 或者 */
+      enum color shirt=blue;
+      printf("%d", sizeof(shirt)) // 4個 bytes
+      shirt=red; // 更改 shirt 為 red
+
+      // red=3; // 違法操作，常數不能更改
+      
+      shirt = 1; // c++ 不合法，c 合法 
+      ```
+      
 * union:
-  * d
+  * 
   * ```c
       union Var{ 
           char ch;
@@ -295,7 +389,7 @@ goto 標籤名稱;
       }
     
     ```
-  * 可以使用在例如 icmp 封包上，icmp 封包有許多[不同類型的格式]((http://www.tsnien.idv.tw/Network_WebBook/chap13/13-5%20ICMP%20%E9%80%9A%E8%A8%8A%E5%8D%94%E5%AE%9A.html))，不同類型的 icmp 封包的 一些位置的位元代表不同的意義，因此可以這樣宣告:(指定義32 到 63 bit)
+  * 可以使用在例如 icmp 封包上，icmp 封包有許多[不同類型的格式]((http://www.tsnien.idv.tw/Network_WebBook/chap13/13-5%20ICMP%20%E9%80%9A%E8%A8%8A%E5%8D%94%E5%AE%9A.html))，不同類型的 icmp 封包的 一些位置的位元代表不同的意義，因此可以這樣宣告:(只定義 33 到 64 bit)
   * ```c
       struct icmp{
           u_char icmp_type;
@@ -319,7 +413,14 @@ goto 標籤名稱;
                   u_short ipm_void;
                   u_short ipm_nextmtu;
               } ih_pmtu;
-          }
+              /* ICMP Router Discovery Messages(Type 9、10) RFC 1256，尋找路由器請求 */
+              struct ih_rtadv
+              {
+              u_char irt_num_addrs; 
+              u_char irt_wpa;
+              u_int16 irt_lifetime;
+              } ih_rtadv;
+          }icmp_hun;
       }
     ```
 
@@ -805,98 +906,4 @@ int main(void)
 }
 ```
 
-## 建構子
-    1. 呼叫類別時，同時也會呼叫建構子，
-    2. 若程式碼內沒有定義建構子的話，編譯器會自動呼叫預設建構子，若程式碼內已經有定義建構子的話，則不會呼叫預設建構子  
 
-1.  定義建構子:
-  ```C++
-  #include <iostream>
-
-  using namespace std;
-
-  class Window
-  {
-  private:
-    char id;
-    int width, height;
-
-  public:
-    Window(char i, int w, int h)
-    {
-      id = i;
-      width = w;
-      height = h;
-      cout << "呼叫建構元" << id << endl;
-    }
-    void show_member(void)
-    {
-      cout << "window" << id << ":" << endl;
-      cout << "width=" << width << endl << "height=" << height << endl;
-    }
-  };
-
-  int main(void)
-  {
-    Window win1('a', 50, 40);
-    Window win2('b', 60, 70);
-
-    win1.show_member();
-    win2.show_member();
-
-    system("pause");
-    return 0;
-  };
-
-  ```
-輸出:
-```
-呼叫建構元a
-呼叫建構元b
-windowa:
-width=50
-height=40
-windowb:
-width=60
-height=70
-請按任意鍵繼續 . . .
-```
-
-2. 建構子多載
-```c++
-#include <iostream>
-
-using namespace std;
-
-class Window
-{
-  private:
-    char id;
-    int width, height;
-
-  public:
-    Window(char i, int w, int h)
-    {
-      id = i;
-      width = w;
-      height = h;
-      cout << "呼叫建構元" << id << endl;
-    }
-    void show_member(void)
-    {
-      cout << "window" << id << ":" << endl;
-      cout << "width=" << width << endl << "height=" << height << endl;
-    }
-};
-
-int main(void)
-{
-  Window win1('a', 50, 40);
-  Window win2('b', 60, 70);
-
-  win1.show_member();
-  win2.show_member();
-
-  system("pause");
-  return 0;
-```
