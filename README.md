@@ -18,7 +18,7 @@
 * ## [檔案處理](#0010) #
 * ## [extern & #ifdef](#0011) #
 * ## [malloc & linked list](#0012) #
-
+* ## [多個檔案](#0013) #
 
 
 ****
@@ -905,5 +905,57 @@ int main(void)
    return 0;
 }
 ```
+
+<h1 id="0014">多個檔案</h1> 
+
+* 範例1：
+  * main.c：
+    * ```c
+       #include <stdio.h>
+       #include <stdlib.h>
+       double area(double r);		/*  函數area()的原型 */
+       double peri(double r); 		/*  函數peri()的原型 */
+       int main(void)
+       {
+          printf("area(2.2)=%5.2f\n",area(2.2));
+          printf("peri(1.4)=%5.2f\n",peri(1.4));
+
+          system("pause");
+          return 0;
+       }
+      ```
+  * area.c：
+    * ```c
+        #include <math.h>
+        #define PI 3.1416
+        void show(double);
+        double area(double r)	/* 自訂函數area()，計算圓面積 */
+        {
+         show(r);
+         return (PI*pow(r,2.0));
+        }
+      ```
+  * peri.c：
+    * ```c
+        #define PI 3.1416
+        void show(double);
+        double peri(double r)	/* 自訂函數peri()，計算圓周長 */
+        {
+         show(r);
+         return (2*PI*r);
+        }
+      ```
+  * show.c：
+    * ```c
+        #include <stdio.h>
+        void show(double r)
+        {
+           printf("半徑為%5.2f, ",r);
+        }
+      ```
+* 範例2(標頭檔)：
+  * [請看c++]()
+
+
 
 
