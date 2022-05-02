@@ -954,7 +954,7 @@ int main(void)
         }
       ```
 * 範例2(標頭檔)：
-  * [請看c++]()
+  * [請看c++](https://github.com/a13140120a/c_plus_plus/blob/main/README.md#014)
 
 
 
