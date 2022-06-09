@@ -115,7 +115,7 @@ goto 標籤名稱;
   * 只能在同一個程式碼檔案內使用，無法跨檔案
   * 活動區域和區域變數相同，但是編譯時就已經配置好固定記憶體位置，且函數結束時值會被保留下來:
   * `static int a;`
-  * [靜態外部變數](https://github.com/a13140120a/c_plus_plus/new/main?readme=1#static-%E5%A4%96%E9%83%A8%E8%AE%8A%E6%95%B8)
+  * [靜態外部變數](https://github.com/a13140120a/c_plus_plus/blob/main/README.md#static-%E5%A4%96%E9%83%A8%E8%AE%8A%E6%95%B8)
 * 函數的引數分成傳值跟傳址
 * 巨集
   * `#define BEGIN {`定義BEGIN 為左括號，`#define END }`定義BEGIN 為右括號
